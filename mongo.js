@@ -11,7 +11,7 @@ const url = `mongodb+srv://vincentmarklynn:${password}@cluster0.iezelpx.mongodb.
 
 const phoneBookSchema = new mongoose.Schema({
   name: String,
-  phoneNumber: String,
+  number: String,
 });
 
 const Phonebook = mongoose.model("Phonebook", phoneBookSchema);
@@ -20,22 +20,22 @@ mongoose.connect(url);
 
 if (process.argv.length == 5) {
   const contactName = process.argv[3];
-  const phoneNumber = process.argv[4];
+  const number = process.argv[4];
 
   const person = new Phonebook({
     name: contactName,
-    phoneNumber: phoneNumber,
+    number: phoneNumber,
   });
 
   person.save().then((result) => {
-    console.log(`Added ${contactName} Number ${phoneNumber} to the phonebook`);
+    console.log(`Added ${contactName} Number ${number} to the phonebook`);
     mongoose.connection.close();
   });
 } else if (process.argv.length == 3) {
   console.log("Phonebook: ");
   Phonebook.find({}).then((persons) => {
     persons.forEach((person) => {
-      console.log(person.name, person.phoneNumber);
+      console.log(person.name, person.number);
     });
     mongoose.connection.close();
   });

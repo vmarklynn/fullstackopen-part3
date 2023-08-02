@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
+require("dotenv").config();
+const Person = require("./models/person");
 
 app.use(express.json());
 app.use(cors());
@@ -54,7 +56,9 @@ app.get("/", (request, response) => {
 });
 
 app.get("/api/persons", (request, response) => {
-  response.json(entries);
+  Person.find({}).then((persons) => {
+    response.json(persons);
+  });
 });
 
 app.get("/info", (request, response) => {
@@ -83,28 +87,29 @@ app.delete("/api/persons/:id", (request, response) => {
 app.post("/api/persons", (request, response) => {
   const body = request.body;
   console.log(body);
-  if (!body.name || !body.number) {
+  if (body.name === undefined || body.number === undefined) {
     return response.status(400).json({
       error: "content missing",
     });
   }
 
-  if (
+  /* if (
     entries.some(
       (person) => person.name.toLowerCase() === body.name.toLowerCase()
     )
   ) {
     return response.status(400).json({ error: "resource already exists" });
-  }
+  } */
 
-  const person = {
-    id: generateRandomId(10000),
+  const person = new Person({
     name: body.name,
     number: body.number,
-  };
+  });
 
-  entries = entries.concat(person);
-  response.json(person);
+  // entries = entries.concat(person);
+  person.save().then((savedPerson) => {
+    response.json(savedPerson);
+  });
 });
 
 const PORT = process.env.PORT || 3001;
