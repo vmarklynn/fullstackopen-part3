@@ -39,10 +39,11 @@ app.get("/api/persons", (request, response) => {
 });
 
 app.get("/info", (request, response) => {
-  const phonebookSize = entries.length;
   const date = new Date();
-  response.send(`<p>Phonebook has information for ${phonebookSize} people.</p>
+  Person.count({}).then((count) => {
+    response.send(`<p>Phonebook has information for ${count} people.</p>
     <p>${date}</p>`);
+  });
 });
 
 app.get("/api/persons/:id", (request, response, next) => {
@@ -75,14 +76,6 @@ app.post("/api/persons", (request, response) => {
     });
   }
 
-  /* if (
-    entries.some(
-      (person) => person.name.toLowerCase() === body.name.toLowerCase()
-    )
-  ) {
-    return response.status(400).json({ error: "resource already exists" });
-  } */
-
   const person = new Person({
     name: body.name,
     number: body.number,
@@ -92,6 +85,22 @@ app.post("/api/persons", (request, response) => {
   person.save().then((savedPerson) => {
     response.json(savedPerson);
   });
+});
+
+app.put("/api/persons/:id", (request, response, next) => {
+  const body = request.body;
+
+  const person = {
+    name: body.name,
+    number: body.number,
+  };
+  console.log(person);
+
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then((updatedPerson) => {
+      response.json(updatedPerson);
+    })
+    .catch((error) => next(error));
 });
 
 app.use(errorHandler);
