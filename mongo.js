@@ -18,20 +18,20 @@ const Phonebook = mongoose.model("Phonebook", phoneBookSchema);
 mongoose.set("strictQuery", false);
 mongoose.connect(url);
 
-if (process.argv.length == 5) {
+if (process.argv.length === 5) {
   const contactName = process.argv[3];
   const number = process.argv[4];
 
   const person = new Phonebook({
     name: contactName,
-    number: phoneNumber,
+    number: number,
   });
 
-  person.save().then((result) => {
+  person.save().then(() => {
     console.log(`Added ${contactName} Number ${number} to the phonebook`);
     mongoose.connection.close();
   });
-} else if (process.argv.length == 3) {
+} else if (process.argv.length === 3) {
   console.log("Phonebook: ");
   Phonebook.find({}).then((persons) => {
     persons.forEach((person) => {
